@@ -99,6 +99,9 @@ assert_no_file "and does not count the panel as shown" "$SANDBOX/state/shown/t2b
 # You walked away before the timer fired: no panel, but you still get called back.
 fresh_log
 BRB_DRY=1 BRB_FAKE_FRONT="com.example.Browser" hook on-start.sh '{"session_id":"t2c","cwd":"/tmp/demo"}'
+# Pin the owner to a terminal. On CI no terminal app sits above the test, so
+# on-start falls back to the front app, which here is the browser itself.
+printf '%s' "com.example.Terminal" > "$SANDBOX/state/term/t2c"
 BRB_DRY=1 BRB_FAKE_FRONT="com.example.Browser" "$REPO/lib/watch.sh" t2c
 assert_log     "" "already away" "already away from the terminal: the watcher skips the panel"
 assert_no_log  "" "would show panel" "and shows nothing"
